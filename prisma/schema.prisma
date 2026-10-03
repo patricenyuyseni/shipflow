@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum ShipmentStatus {
+  CREATED
+  PICKED_UP
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  shipments     Shipment[]
+  history       TrackingHistory[]
+  refreshTokens RefreshToken[]
+}
+
+model Shipment {
+  id               String         @id @default(uuid())
+  trackingNumber   String         @unique
+  senderName       String
+  senderEmail      String?
+  senderPhone      String?
+  recipientName    String
+  recipientEmail   String?
+  recipientPhone   String?
+  origin           String
+  destination      String
+  packageWeight    Float
+  packageLength    Float
+  packageWidth     Float
+  packageHeight    Float
+  currentLocation  String?
+  status           ShipmentStatus @default(CREATED)
+  estimatedDelivery DateTime?
+  createdById      String?
+  createdBy        User?          @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  history TrackingHistory[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model TrackingHistory {
+  id             String          @id @default(uuid())
+  shipmentId     String
+  shipment       Shipment        @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  previousStatus ShipmentStatus?
+  newStatus      ShipmentStatus
+  location       String?
+  description    String?
+  createdById    String?
+  createdBy      User?           @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt      DateTime        @default(now())
+
+  @@index([shipmentId, createdAt])
+}
+
+// One row per year; incremented atomically inside the shipment-creation transaction.
+model TrackingCounter {
+  year  Int @id
+  value Int @default(0)
+}
+
+// Only a SHA-256 hash of each refresh token is stored. Tokens rotate on every use.
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
