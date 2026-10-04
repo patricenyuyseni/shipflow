@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../auth/AuthContext";
 import { listUsers, setRole, type AccountUser } from "../../api/users";
+import { formatDate } from "../../utils/date";
 
 export default function Users() {
   const { user: me } = useAuth();
@@ -58,7 +59,7 @@ export default function Users() {
                   <tr key={u.id} className="border-t border-line">
                     <td className="px-4 py-3 font-medium">{u.name}{u.id === me?.id && <span className="ml-2 text-xs font-normal text-ink/60">(you)</span>}</td>
                     <td className="px-4 py-3">{u.email}</td>
-                    <td className="px-4 py-3 text-ink/70">{new Date(u.createdAt).toLocaleDateString(undefined, { dateStyle: "medium" })}</td>
+                    <td className="px-4 py-3 text-ink/70">{formatDate(u.createdAt)}</td>
                     <td className="px-4 py-3">{select(u)}</td>
                   </tr>
                 ))}

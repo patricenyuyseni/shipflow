@@ -4,9 +4,10 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchAllShipments, listShipments, type Shipment } from "../../api/shipments";
 import { downloadCsv, toCsv } from "../../utils/csv";
 import { StatusBadge } from "../../components/TrackingTimeline";
+import { formatDate } from "../../utils/date";
 
 const STATUSES = ["CREATED", "PICKED_UP", "IN_TRANSIT", "OUT_FOR_DELIVERY", "DELIVERED", "CANCELLED"];
-const fmtDate = (s: string) => new Date(s).toLocaleDateString(undefined, { dateStyle: "medium" });
+const fmtDate = formatDate;
 
 function Card({ s }: { s: Shipment }) {
   return (

@@ -5,6 +5,7 @@ import { Loader2, Search } from "lucide-react";
 import { z } from "zod";
 import { getTracking } from "../api/tracking";
 import TrackingTimeline, { StatusBadge } from "../components/TrackingTimeline";
+import { formatLongDate } from "../utils/date";
 
 const schema = z.string().trim().regex(/^[A-Za-z0-9-]{6,40}$/, "Enter a valid tracking number, for example EXO-2026-000001.");
 
@@ -80,7 +81,7 @@ export default function Track() {
               <Detail label="From" value={data.origin} />
               <Detail label="To" value={data.destination} />
               <Detail label="Current location" value={data.currentLocation ?? "Not available yet"} />
-              <Detail label="Estimated delivery" value={data.estimatedDelivery ? new Date(data.estimatedDelivery).toLocaleDateString(undefined, { dateStyle: "long" }) : "To be confirmed"} />
+              <Detail label="Estimated delivery" value={data.estimatedDelivery ? formatLongDate(data.estimatedDelivery) : "To be confirmed"} />
             </dl>
             <div className="p-5 sm:p-6"><TrackingTimeline status={data.status} history={data.history} /></div>
           </article>

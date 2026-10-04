@@ -23,7 +23,7 @@ export function StatusBadge({ status }: { status: ShipmentStatus }) {
   return <span className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${STATUS_STYLE[status]}`}>{label}</span>;
 }
 
-const fmt = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+import { formatDateTime as fmt } from "../utils/date";
 
 export default function TrackingTimeline({ status, history }: { status: ShipmentStatus; history: TrackingEvent[] }) {
   const cancelled = status === "CANCELLED";

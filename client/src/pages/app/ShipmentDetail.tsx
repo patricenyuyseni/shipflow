@@ -5,9 +5,10 @@ import { Copy, ExternalLink } from "lucide-react";
 import { changeStatus, deleteShipment, getHistory, getShipment, NEXT_STATUSES } from "../../api/shipments";
 import type { ShipmentStatus } from "../../api/tracking";
 import { StatusBadge } from "../../components/TrackingTimeline";
+import { formatDateTime, formatLongDate } from "../../utils/date";
 
 const label = (s: string) => s.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
-const dt = (s: string) => new Date(s).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+const dt = formatDateTime;
 
 export default function ShipmentDetail() {
   const { id = "" } = useParams();
@@ -46,7 +47,7 @@ export default function ShipmentDetail() {
     ["Route", `${s.origin} → ${s.destination}`],
     ["Current location", s.currentLocation ?? "—"],
     ["Package", `${s.packageWeight} kg · ${s.packageLength} × ${s.packageWidth} × ${s.packageHeight} cm`],
-    ["Estimated delivery", s.estimatedDelivery ? new Date(s.estimatedDelivery).toLocaleDateString(undefined, { dateStyle: "long" }) : "—"],
+    ["Estimated delivery", s.estimatedDelivery ? formatLongDate(s.estimatedDelivery) : "—"],
   ];
 
   return (
