@@ -21,6 +21,23 @@ enum ShipmentStatus {
   CANCELLED
 }
 
+enum ServiceLevel {
+  STANDARD
+  EXPRESS
+  PRIORITY
+}
+
+enum Currency {
+  USD
+  EUR
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  UNPAID
+}
+
 model User {
   id           String   @id @default(uuid())
   name         String
@@ -36,32 +53,46 @@ model User {
 }
 
 model Shipment {
-  id               String         @id @default(uuid())
-  trackingNumber   String         @unique
-  senderName       String
-  senderEmail      String?
-  senderPhone      String?
-  recipientName    String
-  recipientEmail   String?
-  recipientPhone   String?
-  origin           String
-  destination      String
-  packageWeight    Float
-  packageLength    Float
-  packageWidth     Float
-  packageHeight    Float
-  currentLocation  String?
-  status           ShipmentStatus @default(CREATED)
+  id             String  @id @default(uuid())
+  trackingNumber String  @unique
+  receiptNumber  String? @unique
+
+  senderName  String
+  senderEmail String?
+  senderPhone String?
+
+  recipientName  String
+  recipientEmail String?
+  recipientPhone String?
+
+  origin      String
+  destination String
+
+  packageWeight Float
+  packageLength Float
+  packageWidth  Float
+  packageHeight Float
+
+  currentLocation   String?
+  status            ShipmentStatus @default(CREATED)
   estimatedDelivery DateTime?
-  createdById      String?
-  createdBy        User?          @relation(fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+
+  serviceLevel  ServiceLevel  @default(STANDARD)
+  shippingCost  Float         @default(0)
+  currency      Currency      @default(USD)
+  paymentStatus PaymentStatus @default(PENDING)
+
+  createdById String?
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   history TrackingHistory[]
 
   @@index([status])
   @@index([createdAt])
+  @@index([paymentStatus])
 }
 
 model TrackingHistory {
@@ -79,13 +110,11 @@ model TrackingHistory {
   @@index([shipmentId, createdAt])
 }
 
-// One row per year; incremented atomically inside the shipment-creation transaction.
 model TrackingCounter {
   year  Int @id
   value Int @default(0)
 }
 
-// Only a SHA-256 hash of each refresh token is stored. Tokens rotate on every use.
 model RefreshToken {
   id        String    @id @default(uuid())
   userId    String

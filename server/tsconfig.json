@@ -1,7 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2022", "module": "CommonJS", "moduleResolution": "node", "outDir": "dist", "rootDir": "src",
-    "strict": true, "esModuleInterop": true, "skipLibCheck": true, "noUnusedLocals": true, "resolveJsonModule": true
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "resolveJsonModule": true
   },
   "include": ["src"],
   "exclude": ["src/**/*.test.ts"]
